@@ -22,11 +22,11 @@ exports.deterministicPartitionKey = (event) => {
   const isExceedMaxLength = candidate.length > MAX_PARTITION_KEY_LENGTH;
 
   return isExceedMaxLength ? createHash(candidate) : candidate;
-
 };
 
 const CRYPTO_ALGORITHM = "sha3-512";
 const CRYPTO_ENCODING = "hex";
+
 function createHash(data) {
   return crypto.createHash(CRYPTO_ALGORITHM).update(data).digest(CRYPTO_ENCODING);
 }
