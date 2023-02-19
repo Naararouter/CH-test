@@ -1,0 +1,32 @@
+Generally, we will need the next steps:
+1. Add the 'customId' field to the database table Agents.
+2. We need to provide a possibility for facilities to update this field via front-end.
+2.1. I assume we already have some basic CRUD functionality for Agents in the scope of each Facility.
+2.2. So we only need to add a UI-field to create/edit form.
+3. As far as I can understand, we have an option to skip specifying of the custom id, in this case,
+the default database id (the old behaviour) should be used. So we need to extend our current generating report feature
+by adding a usage of new field in the case if it's provided.
+
+Based on this, we can split the tickets out from points 1, 2.2, 3:
+- Ticket #1: DB: Add the optional 'customId' field to the table Agents.
+-- The field must be optional to avoid any breaking changes.
+-- Time: 1h? The operation is quite trivial, but maybe, we need some additional time to execute DB migration for our
+environments.
+
+- Ticket #2: FE: Create a "Custom ID" field.
+-- Assume, we already have some established flow and libraries to implement the feature quite quickly. Since the field
+is optional, no especial validation rules is applied. Need to add the UI, bind it with internal form library if we have
+and ensure we sent this new property to the back-end side correctly. We also need to update our test-cases.
+-- Time: 1h? The operation is quite trivial, but heavily depends on existing front-end structure.
+
+- Ticket #3: PDF-Service: Get new "Custom ID" field if it's present.
+-- Implementation of this ticket strongly depends on where exactly we put our pdf generation logic. In easy cases, it could be
+a front-end side, and I believe it could be implemented in the scope of task #2 since it should be an extremely fast. For
+some complex cases BE support could be required, but our case is quite simple at the moment and FE generation should be enough.
+But generally it should contain something like: `generatePDF(agent.customId || agent.dbId, ...someAdditionalArgs)`.
+We also need to update our test-cases.
+-- Time: 1h? Generally, the change is quite trivial, but heavily depends on existing infrastructure.
+
+- Optional: Ticket #4: QA: Test "Custom ID" field
+-- Sorry, almost out of time to describe it properly =)
+-- Time: 2h?
