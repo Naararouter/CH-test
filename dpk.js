@@ -16,18 +16,13 @@ exports.deterministicPartitionKey = (event) => {
   if (!event) return TRIVIAL_PARTITION_KEY;
 
   const key = event.partitionKey;
-  if (key) {
-    // we can replace the line below just with "const candidate = JSON.stringify(key);", but
-    // it could hurt the performance sometimes, I'd prefer to stick with the original way
-    const candidate = typeof key !== "string" ? JSON.stringify(key) : key;
+  if (!key) return createHash(JSON.stringify(event));
 
-    if (candidate.length > MAX_PARTITION_KEY_LENGTH) {
-      return createHash(candidate);
-    }
-    return candidate;
-  }
+  const candidate = typeof key === "string" ? key: JSON.stringify(key);
+  const isExceedMaxLength = candidate.length > MAX_PARTITION_KEY_LENGTH;
 
-  return createHash(JSON.stringify(event));
+  return isExceedMaxLength ? createHash(candidate) : candidate;
+
 };
 
 const CRYPTO_ALGORITHM = "sha3-512";
